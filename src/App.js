@@ -1,25 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef, useEffect } from "react"
+import { BrowserRouter as Router, Route } from "react-router-dom"
+import QRCode from "qrcode"
+import "./App.css"
+
+function Display({ match: { params: { code } } }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    QRCode.toCanvas(canvasRef.current, code, (err) => {
+      if (err) return console.error("Error generating QR code", err)
+
+      console.log("QR gen success", code)
+    })
+  }, [code, canvasRef])
+
+  return (
+    <div className="qr-container">
+      <canvas ref={canvasRef} title={code} />
+    </div>
+  )
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Route path="/:code" component={Display} />
+    </Router>
   );
 }
 
